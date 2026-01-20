@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Editor as TiptapEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect } from 'react';
@@ -8,9 +8,10 @@ import { useEffect } from 'react';
 interface EditorProps {
   content: string;
   onContentChange: (content: string) => void;
+  onEditorReady?: (editor: TiptapEditor) => void;
 }
 
-export default function Editor({ content, onContentChange }: EditorProps) {
+export default function Editor({ content, onContentChange, onEditorReady }: EditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -47,12 +48,13 @@ export default function Editor({ content, onContentChange }: EditorProps) {
     }
   }, [content, editor]);
 
-  // Focus editor on mount
+  // Focus editor on mount and notify parent
   useEffect(() => {
     if (editor) {
       editor.commands.focus();
+      onEditorReady?.(editor);
     }
-  }, [editor]);
+  }, [editor, onEditorReady]);
 
   return (
     <div className="flex-1 flex justify-center overflow-auto">

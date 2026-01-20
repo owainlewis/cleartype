@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Editor as TiptapEditor } from '@tiptap/react';
 import Editor from './components/Editor';
 import Toolbar from './components/Toolbar';
 import Sidebar from './components/Sidebar';
@@ -21,6 +22,7 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [editor, setEditor] = useState<TiptapEditor | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load data on mount
@@ -193,6 +195,7 @@ export default function Home() {
           content={activeDoc?.content || ''}
           isDarkMode={isDarkMode}
           sidebarOpen={sidebarOpen}
+          editor={editor}
           onToggleSidebar={handleToggleSidebar}
           onCopy={handleCopy}
           onToggleDarkMode={handleToggleDarkMode}
@@ -202,6 +205,7 @@ export default function Home() {
             key={activeDoc.id}
             content={activeDoc.content}
             onContentChange={handleContentChange}
+            onEditorReady={setEditor}
           />
         )}
       </div>
