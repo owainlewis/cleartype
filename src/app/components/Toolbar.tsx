@@ -9,10 +9,18 @@ interface ToolbarProps {
   onToggleDarkMode: () => void;
 }
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+}
+
 function countWords(text: string): number {
-  const trimmed = text.trim();
-  if (!trimmed) return 0;
-  return trimmed.split(/\s+/).length;
+  const plainText = stripHtml(text).trim();
+  if (!plainText) return 0;
+  return plainText.split(/\s+/).length;
+}
+
+function countChars(text: string): number {
+  return stripHtml(text).length;
 }
 
 export default function Toolbar({
@@ -24,7 +32,7 @@ export default function Toolbar({
   onToggleDarkMode,
 }: ToolbarProps) {
   const wordCount = countWords(content);
-  const charCount = content.length;
+  const charCount = countChars(content);
 
   return (
     <div className="toolbar h-14 px-4 flex items-center justify-between shrink-0">

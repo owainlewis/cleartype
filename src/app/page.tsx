@@ -147,7 +147,12 @@ export default function Home() {
   const handleCopy = useCallback(async () => {
     if (activeDoc) {
       try {
-        await navigator.clipboard.writeText(activeDoc.content);
+        // Strip HTML tags for plain text copy
+        const plainText = activeDoc.content
+          .replace(/<[^>]*>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .trim();
+        await navigator.clipboard.writeText(plainText);
       } catch (err) {
         console.error('Failed to copy:', err);
       }

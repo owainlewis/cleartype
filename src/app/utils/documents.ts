@@ -63,12 +63,17 @@ export function saveDocuments(store: DocumentStore): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
 }
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+}
+
 export function getDocumentTitle(doc: Document): string {
   if (doc.title && doc.title !== 'Untitled') {
     return doc.title;
   }
-  // Auto-generate from first line of content
-  const firstLine = doc.content.split('\n')[0]?.trim();
+  // Auto-generate from first line of content (strip HTML)
+  const plainText = stripHtml(doc.content);
+  const firstLine = plainText.split('\n')[0]?.trim();
   if (firstLine && firstLine.length > 0) {
     return firstLine.length > 30 ? firstLine.substring(0, 30) + '...' : firstLine;
   }
