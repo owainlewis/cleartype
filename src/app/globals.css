@@ -125,11 +125,12 @@ body {
 
 /* TipTap Editor */
 .editor-content {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 18px;
-  line-height: 1.8;
+  font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  line-height: 1.7;
   color: var(--foreground);
   min-height: 100%;
+  font-weight: 400;
 }
 
 .editor-content:focus {
@@ -153,27 +154,27 @@ body {
 }
 
 .editor-content h1 {
-  font-size: 2em;
+  font-size: 2.25em;
   font-weight: 700;
-  line-height: 1.3;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  line-height: 1.2;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
 }
 
 .editor-content h2 {
-  font-size: 1.5em;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  font-size: 1.75em;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
 }
 
 .editor-content h3 {
-  font-size: 1.25em;
+  font-size: 1.35em;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
   margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.4em;
 }
 
 .editor-content ul {
@@ -187,7 +188,7 @@ body {
 }
 
 .editor-content li {
-  margin-top: 0.25em;
+  margin-top: 0.5em;
 }
 
 .editor-content li p {
