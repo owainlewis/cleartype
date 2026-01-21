@@ -1,25 +1,30 @@
 'use client';
 
-import { useEditor, EditorContent, Editor as TiptapEditor } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
+import { countChars, formatDate } from '../utils/feed';
 
 interface EditorProps {
   content: string;
-  onContentChange: (content: string) => void;
-  onEditorReady?: (editor: TiptapEditor) => void;
+  createdAt: number;
+  onSave: (content: string) => void;
+  onCancel: () => void;
+  autoFocus?: boolean;
 }
 
-export default function Editor({ content, onContentChange, onEditorReady }: EditorProps) {
+export default function Editor({ content, createdAt, onSave, onCancel, autoFocus = true }: EditorProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasChanges = useRef(false);
+
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
-        // Keep only minimal features
         heading: {
           levels: [1, 2, 3],
         },
-        // Disable features we don't need
         codeBlock: false,
         code: false,
         horizontalRule: false,
@@ -36,31 +41,64 @@ export default function Editor({ content, onContentChange, onEditorReady }: Edit
         class: 'editor-content outline-none',
       },
     },
-    onUpdate: ({ editor }) => {
-      onContentChange(editor.getHTML());
+    onUpdate: () => {
+      hasChanges.current = true;
     },
   });
 
-  // Update editor content when switching documents
-  useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content || '');
-    }
-  }, [content, editor]);
-
-  // Focus editor on mount and notify parent
-  useEffect(() => {
+  const handleSave = useCallback(() => {
     if (editor) {
-      editor.commands.focus();
-      onEditorReady?.(editor);
+      onSave(editor.getHTML());
     }
-  }, [editor, onEditorReady]);
+  }, [editor, onSave]);
+
+  // Handle click outside to save
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        handleSave();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [handleSave]);
+
+  // Handle Escape key to save
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleSave();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave]);
+
+  // Focus editor on mount
+  useEffect(() => {
+    if (editor && autoFocus) {
+      editor.commands.focus('end');
+    }
+  }, [editor, autoFocus]);
+
+  const charCount = editor ? countChars(editor.getHTML()) : 0;
 
   return (
-    <div className="flex-1 flex justify-center overflow-auto">
-      <div className="w-full max-w-[700px] h-full p-8">
-        <EditorContent editor={editor} />
+    <div
+      ref={containerRef}
+      className="note-card p-6 rounded-lg border-2 border-blue-500 bg-[var(--background)]"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm text-[var(--muted-foreground)]">
+          {formatDate(createdAt)}
+        </div>
+        <div className="text-xs text-[var(--muted-foreground)]">
+          {charCount} chars
+        </div>
       </div>
+      <EditorContent editor={editor} />
     </div>
   );
 }
