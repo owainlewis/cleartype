@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { loadFeed, saveFeed, createNote, countChars } from '../utils/feed';
+import { loadFeed, saveFeed, createNote, countChars } from '../../utils/feed';
 
 const THEME_KEY = 'cleartype-theme';
 
@@ -67,14 +67,14 @@ export default function NewNotePage() {
       const feed = loadFeed();
       feed.items.unshift(note);
       saveFeed(feed);
-      router.push(`/note/${note.id}`);
+      router.push(`/notes/${note.id}`);
     } else {
-      router.push('/');
+      router.push('/notes');
     }
   }, [editor, router]);
 
   const handleBack = useCallback(() => {
-    router.push('/');
+    router.push('/notes');
   }, [router]);
 
   const handleToggleDarkMode = useCallback(() => {
@@ -103,7 +103,7 @@ export default function NewNotePage() {
         <button
           onClick={handleBack}
           className="toolbar-button text-sm font-medium flex items-center gap-1.5"
-          title="Back to home"
+          title="Back to notes"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7" />

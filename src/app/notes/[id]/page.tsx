@@ -21,7 +21,9 @@ export default function NotePage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const feedRef = useRef<Feed | null>(null);
 
   const editor = useEditor({
@@ -53,6 +55,11 @@ export default function NotePage() {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
+      if (saveStatusTimeoutRef.current) {
+        clearTimeout(saveStatusTimeoutRef.current);
+      }
+
+      setSaveStatus('saving');
 
       saveTimeoutRef.current = setTimeout(() => {
         const feed = loadFeed();
@@ -64,6 +71,11 @@ export default function NotePage() {
         const newFeed = { items: updatedItems };
         saveFeed(newFeed);
         feedRef.current = newFeed;
+        setSaveStatus('saved');
+
+        saveStatusTimeoutRef.current = setTimeout(() => {
+          setSaveStatus('idle');
+        }, 2000);
       }, DEBOUNCE_MS);
     },
   });
@@ -103,6 +115,9 @@ export default function NotePage() {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
+      if (saveStatusTimeoutRef.current) {
+        clearTimeout(saveStatusTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -120,7 +135,7 @@ export default function NotePage() {
         saveFeed({ items: updatedItems });
       }
     }
-    router.push('/');
+    router.push('/notes');
   }, [editor, noteId, router]);
 
   const handleDelete = useCallback(() => {
@@ -131,7 +146,7 @@ export default function NotePage() {
     const feed = loadFeed();
     const updatedItems = feed.items.filter((item) => item.id !== noteId);
     saveFeed({ items: updatedItems });
-    router.push('/');
+    router.push('/notes');
   }, [noteId, router]);
 
   const cancelDelete = useCallback(() => {
@@ -159,25 +174,26 @@ export default function NotePage() {
   if (notFound) {
     return (
       <div className="h-screen flex flex-col">
-        <div className="toolbar h-14 px-4 flex items-center justify-between shrink-0">
+        <nav className="toolbar h-14 px-4 flex items-center justify-between shrink-0" role="navigation" aria-label="Note navigation">
           <button
             onClick={handleBack}
-            className="toolbar-button text-sm font-medium flex items-center gap-1.5"
-            title="Back to home"
+            className="toolbar-button text-sm font-medium flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"
+            aria-label="Back to notes"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back
           </button>
           <button
             onClick={handleToggleDarkMode}
-            className="toolbar-button text-sm font-medium"
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="toolbar-button text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={isDarkMode}
           >
             {isDarkMode ? 'Light' : 'Dark'}
           </button>
-        </div>
+        </nav>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-xl font-semibold mb-2">Note not found</h1>
@@ -186,9 +202,9 @@ export default function NotePage() {
             </p>
             <button
               onClick={handleBack}
-              className="toolbar-button text-sm font-medium inline-flex items-center gap-1.5 border border-[var(--toolbar-border)]"
+              className="toolbar-button text-sm font-medium inline-flex items-center gap-1.5 border border-[var(--toolbar-border)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--background)]"
             >
-              Return to home
+              Return to notes
             </button>
           </div>
         </div>
@@ -200,13 +216,13 @@ export default function NotePage() {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="toolbar h-14 px-4 flex items-center justify-between shrink-0">
+      <nav className="toolbar h-14 px-4 flex items-center justify-between shrink-0" role="navigation" aria-label="Note navigation">
         <button
           onClick={handleBack}
-          className="toolbar-button text-sm font-medium flex items-center gap-1.5"
-          title="Back to home"
+          className="toolbar-button text-sm font-medium flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"
+          aria-label="Back to notes"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Back
@@ -215,10 +231,10 @@ export default function NotePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleDelete}
-            className="toolbar-button text-sm font-medium flex items-center gap-1.5 text-red-500 hover:text-red-600"
-            title="Delete note"
+            className="toolbar-button text-sm font-medium flex items-center gap-1.5 text-red-500 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"
+            aria-label="Delete note"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
@@ -226,41 +242,55 @@ export default function NotePage() {
           </button>
           <button
             onClick={handleToggleDarkMode}
-            className="toolbar-button text-sm font-medium"
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="toolbar-button text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={isDarkMode}
           >
             {isDarkMode ? 'Light' : 'Dark'}
           </button>
         </div>
-      </div>
+      </nav>
 
       <div className="flex-1 overflow-auto">
         <div className="max-w-[700px] mx-auto p-8">
           <div className="flex items-center justify-between mb-4 text-xs text-[var(--muted-foreground)]">
             <span>{note ? formatDate(note.createdAt) : ''}</span>
-            <span>{charCount} chars</span>
+            <div className="flex items-center gap-3">
+              {saveStatus !== 'idle' && (
+                <span className={saveStatus === 'saved' ? 'text-green-600 dark:text-green-400' : ''}>
+                  {saveStatus === 'saving' ? 'Saving...' : 'Saved'}
+                </span>
+              )}
+              <span>{charCount} chars</span>
+            </div>
           </div>
           <EditorContent editor={editor} />
         </div>
       </div>
 
       {showDeleteDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+        >
           <div className="bg-[var(--background)] border border-[var(--toolbar-border)] rounded-lg p-6 max-w-sm mx-4 shadow-lg">
-            <h2 className="text-lg font-semibold mb-2">Delete note?</h2>
-            <p className="text-[var(--muted-foreground)] text-sm mb-4">
+            <h2 id="delete-dialog-title" className="text-lg font-semibold mb-2">Delete note?</h2>
+            <p id="delete-dialog-description" className="text-[var(--muted-foreground)] text-sm mb-4">
               This action cannot be undone. The note will be permanently deleted.
             </p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={cancelDelete}
-                className="toolbar-button text-sm font-medium px-4 py-2 border border-[var(--toolbar-border)]"
+                className="toolbar-button text-sm font-medium px-4 py-2 border border-[var(--toolbar-border)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--background)]"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="toolbar-button text-sm font-medium px-4 py-2 bg-red-500 text-white hover:bg-red-600"
+                className="toolbar-button text-sm font-medium px-4 py-2 bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[var(--background)]"
               >
                 Delete
               </button>

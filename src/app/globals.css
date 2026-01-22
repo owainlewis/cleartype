@@ -4,9 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --toolbar-bg: #fafafa;
-  --toolbar-border: #e5e5e5;
-  --button-hover: #f0f0f0;
+  --toolbar-bg: oklch(0.98 0 0);
+  --toolbar-border: oklch(0.90 0 0);
+  --button-hover: oklch(0.94 0 0);
+  --placeholder-color: oklch(0.60 0 0);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -44,9 +45,10 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --toolbar-bg: #252525;
-  --toolbar-border: #333333;
-  --button-hover: #333333;
+  --toolbar-bg: oklch(0.20 0 0);
+  --toolbar-border: oklch(0.27 0 0);
+  --button-hover: oklch(0.27 0 0);
+  --placeholder-color: oklch(0.45 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -144,13 +146,9 @@ body {
 .editor-content p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #999;
+  color: var(--placeholder-color);
   pointer-events: none;
   height: 0;
-}
-
-.dark .editor-content p.is-editor-empty:first-child::before {
-  color: #666;
 }
 
 .editor-content h1 {
