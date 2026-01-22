@@ -15,16 +15,14 @@ export default function Toolbar({
 }: ToolbarProps) {
   return (
     <nav className="toolbar h-14 px-4 flex items-center justify-between shrink-0" role="navigation" aria-label="Main navigation">
-      <div className="flex items-center gap-6">
-        <Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
-          Cleartype
-        </Link>
+      <Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
+        ClearType
+      </Link>
+
+      <div className="flex items-center gap-4">
         <Link href="/notes" className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
           Notes
         </Link>
-      </div>
-
-      <div className="flex items-center gap-2">
         <button
           onClick={onNewNote}
           className="toolbar-button text-sm font-medium flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--toolbar-bg)]"

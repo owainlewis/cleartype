@@ -49,22 +49,22 @@ export default function LandingPage() {
   return (
     <div className="h-screen flex flex-col">
       <nav className="h-14 px-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
-            Cleartype
-          </Link>
+        <Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
+          ClearType
+        </Link>
+        <div className="flex items-center gap-4">
           <Link href="/notes" className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
             Notes
           </Link>
+          <button
+            onClick={handleToggleDarkMode}
+            className="toolbar-button text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--background)]"
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={isDarkMode}
+          >
+            {isDarkMode ? 'Light' : 'Dark'}
+          </button>
         </div>
-        <button
-          onClick={handleToggleDarkMode}
-          className="toolbar-button text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-2 focus:ring-offset-[var(--background)]"
-          aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          aria-pressed={isDarkMode}
-        >
-          {isDarkMode ? 'Light' : 'Dark'}
-        </button>
       </nav>
 
       <main className="flex-1 flex items-center justify-center">
