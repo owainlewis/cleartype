@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface ToolbarProps {
   isDarkMode: boolean;
   onNewNote: () => void;
@@ -13,8 +15,13 @@ export default function Toolbar({
 }: ToolbarProps) {
   return (
     <nav className="toolbar h-14 px-4 flex items-center justify-between shrink-0" role="navigation" aria-label="Main navigation">
-      <div className="font-semibold text-lg">
-        Cleartype
+      <div className="flex items-center gap-6">
+        <Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
+          Cleartype
+        </Link>
+        <Link href="/notes" className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
+          Notes
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">
